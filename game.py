@@ -22,6 +22,14 @@ class Wall(GameElement):
     IMAGE = "StoneBlock"
     SOLID = True
 
+class Tree(GameElement):
+    IMAGE = "TreeUgly"
+    SOLID = False
+
+    def interact(self, player):
+            
+        GAME_BOARD.draw_msg("Oh look! There's a secret passageway behind the shrubbery!")
+
 class DoorOpen(GameElement):
     IMAGE = "DoorOpen"
     SOLID = False
@@ -126,90 +134,127 @@ def keyboard_handler():
 
        
 def draw_board():
-    
-    #a list of ten lists, each one of ten elements
-    board = [[0]*GAME_WIDTH]*GAME_HEIGHT
-    
-    
+
+    map_file = open("game_map.txt")
+    map_text_lines = map_file.readlines()
+
+    for y in range(len(map_text_lines)):
+        row = map_text_lines[y]
+        for x in range(len(row)):
+            item = map_text_lines[y][x]
+            
+            if item == '#':
+                wall = Wall()
+                GAME_BOARD.register(wall)
+                GAME_BOARD.set_el(x, y, wall)
+
+            if item == '^':
+                tree = Tree()
+                GAME_BOARD.register(tree)
+                GAME_BOARD.set_el(x, y, tree)
+
+            if item == 'O':
+                open_door = DoorOpen()
+                GAME_BOARD.register(open_door)
+                GAME_BOARD.set_el(x, y, open_door)
+
+            if item == 'L':
+                closed_door = DoorClosed()
+                GAME_BOARD.register(closed_door)
+                GAME_BOARD.set_el(x, y, closed_door)
+
+            if item == '*':
+                gem = Gem()
+                GAME_BOARD.register(gem)
+                GAME_BOARD.set_el(x, y, gem)
+
+            if item == 'K':
+                key = Key()
+                GAME_BOARD.register(key)
+                GAME_BOARD.set_el(x, y, key)
 
 
-    GAME_BOARD.register(wall_block)
-    GAME_BOARD.set_el(pos[0], pos[1], wall_block)
-
-
+    # for y in range(len(board)):
+    #     row = board[y]
+    #     for x in range(len(row)):
+    #         item = board[y][x]
+    #         #GAME_BOARD.register(item)
+    #         GAME_BOARD.set_el(x,y, item)
+#a list of ten lists, each one of ten elements
+#board = [[0]*GAME_WIDTH]*GAME_HEIGHT
 
 def initialize():
-    """Put game initialization code here"""
-    wall_positions = [
-        (0, 3),
-        (1, 3),
-        (2, 3),
-        (3, 3),
-        (4, 3),
-        (5, 3),
-        (6, 3),
+#     """Put game initialization code here"""
+#     wall_positions = [
+#         (0, 3),
+#         (1, 3),
+#         (2, 3),
+#         (3, 3),
+#         (4, 3),
+#         (5, 3),
+#         (6, 3),
 
-        (0, 6),
-        (1, 6),
-        (2, 6),
-        (3, 6),
-        (4, 6),
-        (5, 6),
-        (6, 6),
+#         (0, 6),
+#         (1, 6),
+#         (2, 6),
+#         (3, 6),
+#         (4, 6),
+#         (5, 6),
+#         (6, 6),
 
-        (6, 0),
-        (6, 1),
-        (6, 2),
-        (6, 3),
-        (6, 4),
-        (6, 5),
-        (6, 6),
-        (6, 7),
-        (6, 8),
-        (6, 9),
+#         (6, 0),
+#         (6, 1),
+#         (6, 2),
+#         (6, 3),
+#         (6, 4),
+#         (6, 5),
+#         (6, 6),
+#         (6, 7),
+#         (6, 8),
+#         (6, 9),
 
-        (3, 0),
-        (3, 1),
-        (3, 2),
+#         (3, 0),
+#         (3, 1),
+#         (3, 2),
 
-        (2, 6),
-        (2, 7),
-        (2, 8),
-        (2, 9)
+#         (2, 6),
+#         (2, 7),
+#         (2, 8),
+#         (2, 9)
 
-        ]
+#         ]
     
 
-    for pos in wall_positions:
-        wall_block = Wall()
-        GAME_BOARD.register(wall_block)
-        GAME_BOARD.set_el(pos[0], pos[1], wall_block)
+#     for pos in wall_positions:
+#         wall_block = Wall()
+#         GAME_BOARD.register(wall_block)
+#         GAME_BOARD.set_el(pos[0], pos[1], wall_block)
        
 
 
-    closed_door_positions = [
-        (6, 5)
-    ]
+#     closed_door_positions = [
+#         (6, 5)
+#     ]
 
-    for pos in closed_door_positions:
-        closed_door = DoorClosed()
-        GAME_BOARD.register(closed_door)
-        GAME_BOARD.set_el(pos[0], pos[1], closed_door)
+#     for pos in closed_door_positions:
+#         closed_door = DoorClosed()
+#         GAME_BOARD.register(closed_door)
+#         GAME_BOARD.set_el(pos[0], pos[1], closed_door)
 
 
-    open_door_positions = [
-        #6, 5),
-        (1, 6),
-        (4, 3),
-        (3, 0)
-    ]
+#     open_door_positions = [
+#         #6, 5),
+#         (1, 6),
+#         (4, 3),
+#         (3, 0)
+#     ]
 
    
 
-    for pos in open_door_positions:
-        open_door = DoorOpen()
-        GAME_BOARD.register(open_door)
-        GAME_BOARD.set_el(pos[0], pos[1], open_door)
+#     for pos in open_door_positions:
+#         open_door = DoorOpen()
+#         GAME_BOARD.register(open_door)
+#         GAME_BOARD.set_el(pos[0], pos[1], open_door)
        
 
     global PLAYER
@@ -220,16 +265,17 @@ def initialize():
 
     GAME_BOARD.draw_msg("Princess Game!!!")
 
-    gem1 = Gem()
-    GAME_BOARD.register(gem1)
-    GAME_BOARD.set_el(5, 1, gem1)
+    # gem1 = Gem()
+    # GAME_BOARD.register(gem1)
+    # GAME_BOARD.set_el(5, 1, gem1)
 
-    key1 = Key()
-    GAME_BOARD.register(key1)
-    GAME_BOARD.set_el(7,0, key1)
+    # key1 = Key()
+    # GAME_BOARD.register(key1)
+    # GAME_BOARD.set_el(7,0, key1)
 
-    key2 = Key()
-    GAME_BOARD.register(key2)
-    GAME_BOARD.set_el(0,9, key2)
+    # key2 = Key()
+    # GAME_BOARD.register(key2)
+    # GAME_BOARD.set_el(0,9, key2)
 
     keyboard_handler()
+    draw_board()
