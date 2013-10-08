@@ -40,7 +40,8 @@ def setup_images():
             "Cat": "Character Cat Girl.png",
             "Horns": "Character Horn Girl.png",
             "Girl": "Character Pink Girl.png",
-            "Princess": "Character Princess Girl.png"
+            "Princess": "Character Princess Girl.png",
+            "WoodBlock": "Wood Block.png"
             }
 
     for k,v in filenames.items():
@@ -75,7 +76,7 @@ class Board(object):
                 # On the boundaries
                 game_map.append(["Block"] * width)
             else:
-                row = ["Block"] + (["GrassBlock"] * inner_width) + ["Block"]
+                row = ["Block"] + (["Block"] * inner_width) + ["Block"]
                 game_map.append(row)
         
         self.base_board = game_map

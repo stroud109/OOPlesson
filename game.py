@@ -18,10 +18,27 @@ GAME_HEIGHT = 10
 pass
 ####   End class definitions    ####
 
-class Rock(GameElement):
-    IMAGE = "Rock"
+class Wall(GameElement):
+    IMAGE = "StoneBlock"
     SOLID = True
 
+class DoorOpen(GameElement):
+    IMAGE = "DoorOpen"
+    SOLID = False
+
+class DoorClosed(GameElement):
+    IMAGE = "DoorClosed"
+    SOLID = True
+
+    def interact(self, player):
+        
+        if len(player.inventory.get('keys', []))> 0:
+            self.SOLID = False
+            
+            GAME_BOARD.draw_msg("You stealthily opened a door with your stolen key!")
+            
+        else:
+            GAME_BOARD.draw_msg("Arg! The door is locked! Search the grounds for a key.")
 
 class Gem(GameElement):
     IMAGE = "BlueGem"
@@ -29,8 +46,8 @@ class Gem(GameElement):
     
     def interact(self, player):
         player.inventory['gems'] = []
-
-        if len(player.inventory['keys'])> 0:
+        
+        if len(player.inventory.get('keys', []))> 0:
             self.SOLID = False
             gems = player.inventory.get('gems', [])
             gems.append(self)
@@ -39,8 +56,10 @@ class Gem(GameElement):
 
             player.inventory['gems'] = gems 
             GAME_BOARD.draw_msg("You just acquired a gem! You have %d gems!"%(len(player.inventory['gems'])))
+            
         else:
             GAME_BOARD.draw_msg("You need a key to collect a gem!")
+            
 
 
 class Key(GameElement):
@@ -106,47 +125,111 @@ def keyboard_handler():
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
 
        
+def draw_board():
+    
+    #a list of ten lists, each one of ten elements
+    board = [[0]*GAME_WIDTH]*GAME_HEIGHT
+    
+    
+
+
+    GAME_BOARD.register(wall_block)
+    GAME_BOARD.set_el(pos[0], pos[1], wall_block)
+
 
 
 def initialize():
     """Put game initialization code here"""
-    rock_positions = [
-        (2, 1),
-        (1, 2),
+    wall_positions = [
+        (0, 3),
+        (1, 3),
+        (2, 3),
+        (3, 3),
+        (4, 3),
+        (5, 3),
+        (6, 3),
+
+        (0, 6),
+        (1, 6),
+        (2, 6),
+        (3, 6),
+        (4, 6),
+        (5, 6),
+        (6, 6),
+
+        (6, 0),
+        (6, 1),
+        (6, 2),
+        (6, 3),
+        (6, 4),
+        (6, 5),
+        (6, 6),
+        (6, 7),
+        (6, 8),
+        (6, 9),
+
+        (3, 0),
+        (3, 1),
         (3, 2),
-        (2, 3)
+
+        (2, 6),
+        (2, 7),
+        (2, 8),
+        (2, 9)
+
         ]
-    rocks = []
+    
 
-    for pos in rock_positions:
-        rock = Rock()
-        GAME_BOARD.register(rock)
-        GAME_BOARD.set_el(pos[0], pos[1], rock)
-        rocks.append(rock)
+    for pos in wall_positions:
+        wall_block = Wall()
+        GAME_BOARD.register(wall_block)
+        GAME_BOARD.set_el(pos[0], pos[1], wall_block)
+       
 
-    rocks[-1].SOLID = False
 
-    for rock in rocks:
-        print rock
+    closed_door_positions = [
+        (6, 5)
+    ]
+
+    for pos in closed_door_positions:
+        closed_door = DoorClosed()
+        GAME_BOARD.register(closed_door)
+        GAME_BOARD.set_el(pos[0], pos[1], closed_door)
+
+
+    open_door_positions = [
+        #6, 5),
+        (1, 6),
+        (4, 3),
+        (3, 0)
+    ]
+
+   
+
+    for pos in open_door_positions:
+        open_door = DoorOpen()
+        GAME_BOARD.register(open_door)
+        GAME_BOARD.set_el(pos[0], pos[1], open_door)
+       
 
     global PLAYER
     PLAYER = Character()
     GAME_BOARD.register(PLAYER)
-    GAME_BOARD.set_el(2,2, PLAYER)
+    GAME_BOARD.set_el(0,4, PLAYER)
     print PLAYER
 
     GAME_BOARD.draw_msg("Princess Game!!!")
 
     gem1 = Gem()
     GAME_BOARD.register(gem1)
-    GAME_BOARD.set_el(3, 1, gem1)
+    GAME_BOARD.set_el(5, 1, gem1)
 
     key1 = Key()
     GAME_BOARD.register(key1)
-    GAME_BOARD.set_el(4,4, key1)
+    GAME_BOARD.set_el(7,0, key1)
 
     key2 = Key()
     GAME_BOARD.register(key2)
-    GAME_BOARD.set_el(2,7, key2)
+    GAME_BOARD.set_el(0,9, key2)
 
     keyboard_handler()
