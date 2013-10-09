@@ -138,9 +138,16 @@ class Guard(Character):
         direction = random.choice(["up", "down", "left", "right"])
         next_x, next_y = self.next_pos(direction)
 
-        if next_x in [0, 1, 2, 3, 4, 5] and next_y in [2, 3]:
-            GAME_BOARD.del_el(self.x, self.y)
-            GAME_BOARD.set_el(next_x, next_y, self)
+        # if next_x in [0, 1, 2, 3, 4, 5] and next_y in [2, 3]:
+        #     GAME_BOARD.del_el(self.x, self.y)
+        #     GAME_BOARD.set_el(next_x, next_y, self)
+        if next_x in range(GAME_WIDTH) and next_y in range(GAME_HEIGHT):
+
+            existing_el = GAME_BOARD.get_el(next_x, next_y)
+
+            if existing_el is None:
+                GAME_BOARD.del_el(GUARD.x, GUARD.y)
+                GAME_BOARD.set_el(next_x, next_y, GUARD)
 
     def interact(self, player):
         
@@ -277,7 +284,8 @@ def draw_item(x, y,item):
 
 def initialize():
 
-
+    draw_museum()
+    
     global PLAYER
     PLAYER = Character()
     GAME_BOARD.register(PLAYER)
@@ -292,6 +300,6 @@ def initialize():
 
 
     keyboard_handler()
-    draw_museum()
+    
     #draw_prison()
     #GUARD.move_guard()
