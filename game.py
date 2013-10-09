@@ -21,10 +21,12 @@ pass
 class Wall(GameElement):
     IMAGE = "StoneBlock"
     SOLID = True
+    COLLECTIBLE = False
 
 class Tree(GameElement):
     IMAGE = "TreeUgly"
     SOLID = False
+    COLLECTIBLE = False
 
     def interact(self, player):
             
@@ -33,10 +35,12 @@ class Tree(GameElement):
 class DoorOpen(GameElement):
     IMAGE = "DoorOpen"
     SOLID = False
+    COLLECTIBLE = False
 
 class DoorClosed(GameElement):
     IMAGE = "DoorClosed"
     SOLID = True
+    COLLECTIBLE = False
 
     def interact(self, player):
         
@@ -48,9 +52,29 @@ class DoorClosed(GameElement):
         else:
             GAME_BOARD.draw_msg("Arg! The door is locked! Search the grounds for a key.")
 
+class Bug(GameElement):
+    IMAGE = "Bug"
+    SOLID = True
+    COLLECTIBLE = True
+    
+    def interact(self, player):
+        player.inventory['bugs'] = []
+        
+        if len(player.inventory.get('keys', []))> 0:
+            self.SOLID = False
+            bugs = player.inventory.get('bugs', [])
+            bugs.append(self)
+
+            player.inventory['bugs'] = bugs 
+            GAME_BOARD.draw_msg("You've collected the bug! You have %d bugs."%(len(player.inventory['bugs'])))
+            
+        else:
+            GAME_BOARD.draw_msg("You need a key to unlock the exhibit and collect the bug!")
+
 class Gem(GameElement):
     IMAGE = "BlueGem"
     SOLID = True
+    COLLECTIBLE = True
     
     def interact(self, player):
         player.inventory['gems'] = []
@@ -63,7 +87,7 @@ class Gem(GameElement):
             #'gems' is the key, gems is the list of jewels.
 
             player.inventory['gems'] = gems 
-            GAME_BOARD.draw_msg("You just acquired a gem! You have %d gems!"%(len(player.inventory['gems'])))
+            GAME_BOARD.draw_msg("The gem is yours! You have %d gems."%(len(player.inventory['gems'])))
             
         else:
             GAME_BOARD.draw_msg("You need a key to collect a gem!")
@@ -73,13 +97,14 @@ class Gem(GameElement):
 class Key(GameElement):
     IMAGE = "Key"
     SOLID = False
+    COLLECTIBLE = True
 
     def interact(self, player):
         keys = player.inventory.get('keys', [])
         keys.append(self)
 
         player.inventory['keys'] = keys
-        GAME_BOARD.draw_msg("You just acquired a key! You have %d keys!"%(len(player.inventory['keys'])))
+        GAME_BOARD.draw_msg("You stole a key that you found lying on the ground. You have %d keys."%(len(player.inventory['keys'])))
 
 
 class Character(GameElement):
@@ -129,19 +154,32 @@ def keyboard_handler():
 
 
             if existing_el is None or not existing_el.SOLID:
+                ##Get position
+                ##Look at map
+                item = GAME_BOARD.original_map[PLAYER.y][PLAYER.x]
+                ##see if there is something to redraw
+                
                 GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
+                ##redraw if applicible
+              
+                if item in "^OL":
+                    print "not COLLECTIBLE!"
+                    #draw_item(next_x, next_y, item)
+                    draw_board()
 
        
 def draw_board():
 
     map_file = open("game_map.txt")
     map_text_lines = map_file.readlines()
+    GAME_BOARD.original_map = map_text_lines
 
     for y in range(len(map_text_lines)):
         row = map_text_lines[y]
         for x in range(len(row)):
             item = map_text_lines[y][x]
+
             
             if item == '#':
                 wall = Wall()
@@ -173,109 +211,62 @@ def draw_board():
                 GAME_BOARD.register(key)
                 GAME_BOARD.set_el(x, y, key)
 
+            if item == 'B':
+                bug = Bug()
+                GAME_BOARD.register(bug)
+                GAME_BOARD.set_el(x, y, bug)
 
-    # for y in range(len(board)):
-    #     row = board[y]
-    #     for x in range(len(row)):
-    #         item = board[y][x]
-    #         #GAME_BOARD.register(item)
-    #         GAME_BOARD.set_el(x,y, item)
-#a list of ten lists, each one of ten elements
-#board = [[0]*GAME_WIDTH]*GAME_HEIGHT
+
+def draw_item(x, y,item):
+
+            
+    if item == '#':
+        wall = Wall()
+        GAME_BOARD.register(wall)
+        GAME_BOARD.set_el(x, y, wall)
+
+    if item == '^':
+        tree = Tree()
+        GAME_BOARD.register(tree)
+        GAME_BOARD.set_el(x, y, tree)
+
+    if item == 'O':
+        open_door = DoorOpen()
+        GAME_BOARD.register(open_door)
+        GAME_BOARD.set_el(x, y, open_door)
+
+    if item == 'L':
+        closed_door = DoorClosed()
+        GAME_BOARD.register(closed_door)
+        GAME_BOARD.set_el(x, y, closed_door)
+
+    if item == '*':
+        gem = Gem()
+        GAME_BOARD.register(gem)
+        GAME_BOARD.set_el(x, y, gem)
+
+    if item == 'K':
+        key = Key()
+        GAME_BOARD.register(key)
+        GAME_BOARD.set_el(x, y, key)
+
+    if item == 'B':
+        bug = Bug()
+        GAME_BOARD.register(bug)
+        GAME_BOARD.set_el(x, y, bug)
+
+
 
 def initialize():
-#     """Put game initialization code here"""
-#     wall_positions = [
-#         (0, 3),
-#         (1, 3),
-#         (2, 3),
-#         (3, 3),
-#         (4, 3),
-#         (5, 3),
-#         (6, 3),
 
-#         (0, 6),
-#         (1, 6),
-#         (2, 6),
-#         (3, 6),
-#         (4, 6),
-#         (5, 6),
-#         (6, 6),
-
-#         (6, 0),
-#         (6, 1),
-#         (6, 2),
-#         (6, 3),
-#         (6, 4),
-#         (6, 5),
-#         (6, 6),
-#         (6, 7),
-#         (6, 8),
-#         (6, 9),
-
-#         (3, 0),
-#         (3, 1),
-#         (3, 2),
-
-#         (2, 6),
-#         (2, 7),
-#         (2, 8),
-#         (2, 9)
-
-#         ]
-    
-
-#     for pos in wall_positions:
-#         wall_block = Wall()
-#         GAME_BOARD.register(wall_block)
-#         GAME_BOARD.set_el(pos[0], pos[1], wall_block)
-       
-
-
-#     closed_door_positions = [
-#         (6, 5)
-#     ]
-
-#     for pos in closed_door_positions:
-#         closed_door = DoorClosed()
-#         GAME_BOARD.register(closed_door)
-#         GAME_BOARD.set_el(pos[0], pos[1], closed_door)
-
-
-#     open_door_positions = [
-#         #6, 5),
-#         (1, 6),
-#         (4, 3),
-#         (3, 0)
-#     ]
-
-   
-
-#     for pos in open_door_positions:
-#         open_door = DoorOpen()
-#         GAME_BOARD.register(open_door)
-#         GAME_BOARD.set_el(pos[0], pos[1], open_door)
-       
 
     global PLAYER
     PLAYER = Character()
     GAME_BOARD.register(PLAYER)
     GAME_BOARD.set_el(0,4, PLAYER)
-    print PLAYER
 
     GAME_BOARD.draw_msg("Princess Game!!!")
 
-    # gem1 = Gem()
-    # GAME_BOARD.register(gem1)
-    # GAME_BOARD.set_el(5, 1, gem1)
-
-    # key1 = Key()
-    # GAME_BOARD.register(key1)
-    # GAME_BOARD.set_el(7,0, key1)
-
-    # key2 = Key()
-    # GAME_BOARD.register(key2)
-    # GAME_BOARD.set_el(0,9, key2)
 
     keyboard_handler()
     draw_board()
