@@ -142,6 +142,11 @@ class Guard(Character):
             GAME_BOARD.del_el(self.x, self.y)
             GAME_BOARD.set_el(next_x, next_y, self)
 
+    def interact(self, player):
+        
+        draw_prison()
+        GAME_BOARD.draw_msg("Oh no! Only one essential employee in the entire building and she caught you! No more fancy art collecting for you.")
+
 def keyboard_handler():
     direction = None
 
@@ -174,7 +179,7 @@ def keyboard_handler():
             if existing_el is None or not existing_el.SOLID:
                 ##Get position
                 ##Look at map
-                item = GAME_BOARD.original_map[PLAYER.y][PLAYER.x]
+                item = GAME_BOARD.current_map[PLAYER.y][PLAYER.x]
                 ##see if there is something to redraw
                 
                 GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
@@ -188,20 +193,45 @@ def keyboard_handler():
                 # print PLAYER.x, PLAYER.y
                 # print item
 
+def render_board(board_text):
+    '''
+    This will draw any board
+    '''
+    for y in range(len(board_text)):
+        row = board_text[y]
+        for x in range(len(row)):
+            item = board_text[y][x]
+
+            draw_item(x, y, item)
        
-def draw_board():
+def draw_museum():
 
     map_file = open("game_map.txt")
     map_text_lines = map_file.readlines()
-    GAME_BOARD.original_map = map_text_lines
+    GAME_BOARD.current_map = map_text_lines
 
-    for y in range(len(map_text_lines)):
-        row = map_text_lines[y]
-        for x in range(len(row)):
-            item = map_text_lines[y][x]
+    render_board(map_text_lines)
 
-            draw_item(x, y, item)
+    # for y in range(len(map_text_lines)):
+    #     row = map_text_lines[y]
+    #     for x in range(len(row)):
+    #         item = map_text_lines[y][x]
 
+            # draw_item(x, y, item)
+
+def draw_prison():
+
+    prison_file = open("prison_cell.txt")
+    prison_text_lines = prison_file.readlines()
+    GAME_BOARD.current_map = prison_text_lines
+
+    render_board(prison_text_lines)
+
+    GAME_BOARD.register(PLAYER)
+    GAME_BOARD.set_el(4,3, PLAYER)
+
+    GAME_BOARD.register(GUARD)
+    GAME_BOARD.set_el(2,3, GUARD)
 
 def draw_item(x, y,item):
 
@@ -241,6 +271,8 @@ def draw_item(x, y,item):
         GAME_BOARD.register(bug)
         GAME_BOARD.set_el(x, y, bug)
 
+    if item == '.':
+        GAME_BOARD.del_el(x, y)
 
 
 def initialize():
@@ -260,5 +292,6 @@ def initialize():
 
 
     keyboard_handler()
-    draw_board()
+    draw_museum()
+    #draw_prison()
     #GUARD.move_guard()
