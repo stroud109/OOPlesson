@@ -12,7 +12,7 @@ PLAYER = None
 ######################
 
 GAME_WIDTH = 10
-GAME_HEIGHT = 10
+GAME_HEIGHT = 7
 
 #### Put class definitions here ####
 pass
@@ -160,13 +160,15 @@ def keyboard_handler():
                 ##see if there is something to redraw
                 
                 GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+                if item in "^OL":
+                    #draw_item(next_x, next_y, item)
+                    draw_item(PLAYER.x, PLAYER.y, item)
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
                 ##redraw if applicible
               
-                if item in "^OL":
-                    print "not COLLECTIBLE!"
-                    #draw_item(next_x, next_y, item)
-                    draw_board()
+                print existing_el
+                print PLAYER.x, PLAYER.y
+                print item
 
        
 def draw_board():
@@ -263,7 +265,7 @@ def initialize():
     global PLAYER
     PLAYER = Character()
     GAME_BOARD.register(PLAYER)
-    GAME_BOARD.set_el(0,4, PLAYER)
+    GAME_BOARD.set_el(0,3, PLAYER)
 
     GAME_BOARD.draw_msg("Princess Game!!!")
 
