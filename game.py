@@ -182,41 +182,7 @@ def draw_board():
         for x in range(len(row)):
             item = map_text_lines[y][x]
 
-            
-            if item == '#':
-                wall = Wall()
-                GAME_BOARD.register(wall)
-                GAME_BOARD.set_el(x, y, wall)
-
-            if item == '^':
-                tree = Tree()
-                GAME_BOARD.register(tree)
-                GAME_BOARD.set_el(x, y, tree)
-
-            if item == 'O':
-                open_door = DoorOpen()
-                GAME_BOARD.register(open_door)
-                GAME_BOARD.set_el(x, y, open_door)
-
-            if item == 'L':
-                closed_door = DoorClosed()
-                GAME_BOARD.register(closed_door)
-                GAME_BOARD.set_el(x, y, closed_door)
-
-            if item == '*':
-                gem = Gem()
-                GAME_BOARD.register(gem)
-                GAME_BOARD.set_el(x, y, gem)
-
-            if item == 'K':
-                key = Key()
-                GAME_BOARD.register(key)
-                GAME_BOARD.set_el(x, y, key)
-
-            if item == 'B':
-                bug = Bug()
-                GAME_BOARD.register(bug)
-                GAME_BOARD.set_el(x, y, bug)
+            draw_item(x, y, item)
 
 
 def draw_item(x, y,item):
