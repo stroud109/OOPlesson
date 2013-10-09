@@ -3,12 +3,14 @@ import pyglet
 from pyglet.window import key
 from core import GameElement
 import sys
+import random
 
 #### DO NOT TOUCH ####
 GAME_BOARD = None
 DEBUG = False
 KEYBOARD = None
 PLAYER = None
+GUARD = None
 ######################
 
 GAME_WIDTH = 10
@@ -125,6 +127,21 @@ class Character(GameElement):
             return (self.x+1, self.y)
         return None
 
+class Guard(Character):
+    IMAGE = "Horns"
+    SOLID = True
+    COLLECTIBLE = False
+
+    def move_guard(self):
+        # move guard within hallway (2, (0-5)) and (3, (0-5))
+        # [[0, 2], [1, 2], [3, 2], [4, 2], [5, 2]]
+        direction = random.choice(["up", "down", "left", "right"])
+        next_x, next_y = self.next_pos(direction)
+
+        if next_x in [0, 1, 2, 3, 4, 5] and next_y in [2, 3]:
+            GAME_BOARD.del_el(self.x, self.y)
+            GAME_BOARD.set_el(next_x, next_y, self)
+
 def keyboard_handler():
     direction = None
 
@@ -141,6 +158,7 @@ def keyboard_handler():
 
 
     if direction:
+        GUARD.move_guard()
         next_location = PLAYER.next_pos(direction)
         next_x = next_location[0]
         next_y = next_location[1]
@@ -166,9 +184,9 @@ def keyboard_handler():
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
                 ##redraw if applicible
               
-                print existing_el
-                print PLAYER.x, PLAYER.y
-                print item
+                # print existing_el
+                # print PLAYER.x, PLAYER.y
+                # print item
 
        
 def draw_board():
@@ -233,8 +251,14 @@ def initialize():
     GAME_BOARD.register(PLAYER)
     GAME_BOARD.set_el(0,3, PLAYER)
 
+    global GUARD
+    GUARD = Guard()
+    GAME_BOARD.register(GUARD)
+    GAME_BOARD.set_el(5,2, GUARD)
+
     GAME_BOARD.draw_msg("Princess Game!!!")
 
 
     keyboard_handler()
     draw_board()
+    #GUARD.move_guard()
