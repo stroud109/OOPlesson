@@ -60,7 +60,7 @@ class Bug(GameElement):
     COLLECTIBLE = True
     
     def interact(self, player):
-        player.inventory['bugs'] = []
+        #player.inventory['bugs'] = []
         
         if len(player.inventory.get('keys', []))> 0:
             self.SOLID = False
@@ -73,13 +73,33 @@ class Bug(GameElement):
         else:
             GAME_BOARD.draw_msg("You need a key to unlock the exhibit and collect the bug!")
 
+class Star(GameElement):
+    IMAGE = "Star"
+    SOLID = True
+    COLLECTIBLE = True
+
+class Rock(GameElement):
+    IMAGE = "Rock"
+    SOLID = True
+    COLLECTIBLE = True
+
+class Boy(GameElement):
+    IMAGE = "Boy"
+    SOLID = True
+    COLLECTIBLE = False
+
+    def interact(self, player):
+        draw_prison()
+        GAME_BOARD.draw_msg("Turns out the sleeping boy was an incognito guard. Let this be a lesson not to talk to strangers in a closed museum.")
+
+
 class Gem(GameElement):
     IMAGE = "BlueGem"
     SOLID = True
     COLLECTIBLE = True
     
     def interact(self, player):
-        player.inventory['gems'] = []
+        #player.inventory['gems'] = []
         
         if len(player.inventory.get('keys', []))> 0:
             self.SOLID = False
@@ -152,7 +172,7 @@ class Guard(Character):
     def interact(self, player):
         
         draw_prison()
-        GAME_BOARD.draw_msg("Oh no! Only one essential employee in the entire building and she caught you! No more fancy art collecting for you.")
+        GAME_BOARD.draw_msg("Oh no! There are so few essential employees in the building, but one of them caught you! No more fancy art collecting for you.")
 
 def keyboard_handler():
     direction = None
@@ -281,11 +301,26 @@ def draw_item(x, y,item):
     if item == '.':
         GAME_BOARD.del_el(x, y)
 
+    if item == "@":
+        star = Star()
+        GAME_BOARD.register(star)
+        GAME_BOARD.set_el(x, y, star)
+
+    if item == "R":
+        rock = Rock()
+        GAME_BOARD.register(rock)
+        GAME_BOARD.set_el(x, y, rock)
+
+    if item == "Z":
+        boy = Boy()
+        GAME_BOARD.register(boy)
+        GAME_BOARD.set_el(x, y, boy)
+
 
 def initialize():
 
     draw_museum()
-    
+
     global PLAYER
     PLAYER = Character()
     GAME_BOARD.register(PLAYER)
