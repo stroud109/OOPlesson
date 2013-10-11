@@ -7,7 +7,7 @@ import random
 
 #### DO NOT TOUCH ####
 GAME_BOARD = None
-DEBUG = True
+DEBUG = False
 KEYBOARD = None
 PLAYER = None
 GUARD = None
@@ -102,8 +102,8 @@ class Star(GameElement):
 
         if success_likelihood >= random.randint(0, 1):
             self.SOLID = False
-            GAME_BOARD.draw_msg("Bravo! You pulled off the heist!")
-            draw_winner_island()
+            GAME_BOARD.draw_msg("Bravo! You pulled off the heist! Enjoy your intergalactic treasure in the privacy of your enchanted garden.")
+            draw_win_map()
         else: 
             GAME_BOARD.draw_msg("Blinded by greed, you attempted this heist without adequate preperation. Back to jail you go.")
             draw_prison()
@@ -210,13 +210,13 @@ class Guard(Character):
         draw_prison()
         GAME_BOARD.draw_msg("Oh no! There are only a few essential employees in the building, but one of them caught you! No more fancy art collecting for you.")
 
-class Water(GameElement):
-    IMAGE = "Water"
+class ShortTree(GameElement):
+    IMAGE = "ShortTree"
     SOLID = True
     COLLECTIBLE = False
 
-class Grass(GameElement):
-    IMAGE = "GrassBlock"
+class GreenGem(GameElement):
+    IMAGE = "GreenGem"
     SOLID = True
     COLLECTIBLE = False
 
@@ -309,13 +309,13 @@ def draw_prison():
 
     PLAYER.reset_inventory()
 
-def draw_winner_island():
+def draw_win_map():
 
-    island_file = open("win_map.txt")
-    island_text_lines = island_file.readlines()
-    GAME_BOARD.current_map = island_text_lines
+    win_file = open("win_map.txt")
+    win_text_lines = win_file.readlines()
+    GAME_BOARD.current_map = win_text_lines
 
-    render_board(island_text_lines)
+    render_board(win_text_lines)
 
     GAME_BOARD.register(PLAYER)
     GAME_BOARD.set_el(2,4, PLAYER)
@@ -381,15 +381,15 @@ def draw_item(x, y,item):
         GAME_BOARD.register(fake_wall)
         GAME_BOARD.set_el(x, y, fake_wall)
 
-    if item == "W":
-        water = Water()
-        GAME_BOARD.register(water)
-        GAME_BOARD.set_el(x, y, water)
+    if item == "!":
+        short_tree = ShortTree()
+        GAME_BOARD.register(short_tree)
+        GAME_BOARD.set_el(x, y, short_tree)
 
     if item == "$":
-        grass = Grass()
-        GAME_BOARD.register(grass)
-        GAME_BOARD.set_el(x, y, grass)
+        green_gem = GreenGem()
+        GAME_BOARD.register(green_gem)
+        GAME_BOARD.set_el(x, y, green_gem)
 
     if item == "T":
         open_chest = OpenChest()
@@ -407,7 +407,7 @@ def initialize():
 
     draw_museum()
 
-    GAME_BOARD.draw_msg("Princess Game!!!")
+    GAME_BOARD.draw_msg("Museum Heist, Government Shutdown Edition: As a princess with an eye for rare treasure, you decide to 'peruse' the Smithsonian.")
 
     keyboard_handler()
     
