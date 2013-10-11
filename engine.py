@@ -44,7 +44,9 @@ def setup_images():
             "WoodBlock": "Wood Block.png",
             "TreeUgly" : "Tree Ugly.png",
             "Bug" : "Enemy Bug.png",
-            "Star" : "Star.png"
+            "Star" : "Star.png",
+            "Water" : "Water Block.png",
+            "OpenChest" : "Chest Open.png",
             }
 
     for k,v in filenames.items():

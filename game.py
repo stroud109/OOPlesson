@@ -25,15 +25,15 @@ class Wall(GameElement):
     SOLID = True
     COLLECTIBLE = False
 
-# class FakeWall(GameElement):
-#     IMAGE = "StoneBlock"
-#     SOLID = False
-#     COLLECTIBLE = False
+class FakeWall(GameElement):
+    IMAGE = "StoneBlock"
+    SOLID = False
+    COLLECTIBLE = False
 
-#     def interact(self, player):
+    def interact(self, player):
 
-#         draw_museum()
-#         GAME_BOARD.draw_msg("You picked the lock on the prison gate. Looks like pretty princess crowns are useful after all.")
+        draw_museum()
+        GAME_BOARD.draw_msg("You picked the lock on the prison gate. Looks like pretty princess crowns are useful after all.")
 
 class Tree(GameElement):
     IMAGE = "TreeUgly"
@@ -78,7 +78,7 @@ class Bug(GameElement):
             # bugs.append(self)
 
             player.inventory['bugs'].append(self)
-            GAME_BOARD.draw_msg("You've collected the bug! You have %d bugs."%(len(player.inventory['bugs'])))
+            GAME_BOARD.draw_msg("You've collected the enormous, semi-precious bug! You have %d bug in your loot."%(len(player.inventory['bugs'])))
             
         else:
             GAME_BOARD.draw_msg("You need a key to unlock the exhibit and collect the bug!")
@@ -101,15 +101,23 @@ class Star(GameElement):
         success_likelihood = float(temp)/4
 
         if success_likelihood >= random.randint(0, 1):
+            self.SOLID = False
             GAME_BOARD.draw_msg("Bravo! You pulled off the heist!")
+            draw_winner_island()
         else: 
             GAME_BOARD.draw_msg("Blinded by greed, you attempted this heist without adequate preperation. Back to jail you go.")
             draw_prison()
 
 class Rock(GameElement):
     IMAGE = "Rock"
-    SOLID = True
+    SOLID = False
     COLLECTIBLE = True
+
+    def interact(self, player):
+
+        player.inventory['rocks'].append(self)
+        GAME_BOARD.draw_msg("Ha hah! You've acquired the moon rock! You have %d moon rock in your loot."%(len(player.inventory['rocks'])))
+
 
 class Boy(GameElement):
     IMAGE = "Boy"
@@ -135,7 +143,7 @@ class Gem(GameElement):
             GAME_BOARD.draw_msg("The gem is yours! You have %d gems."%(len(player.inventory['gems'])))
             
         else:
-            GAME_BOARD.draw_msg("You need a key to collect a gem!")
+            GAME_BOARD.draw_msg("You need a key to collect this gem.")
             
 
 
@@ -147,7 +155,7 @@ class Key(GameElement):
     def interact(self, player):
 
         player.inventory['keys'].append(self)
-        GAME_BOARD.draw_msg("You stole a key that you found lying on the ground. You have %d keys."%(len(player.inventory['keys'])))
+        GAME_BOARD.draw_msg("You stole a key that you found lying on the ground. You have %d key."%(len(player.inventory['keys'])))
 
 
 class Character(GameElement):
@@ -155,13 +163,16 @@ class Character(GameElement):
 
     def __init__(self):
         GameElement.__init__(self)
+        self.reset_inventory()
+
+    def reset_inventory(self):
         self.inventory = {
             "gems": [],
             "keys": [],
             "rocks": [],
             "bugs": [],
         }
-
+        
     def next_pos(self, direction):
         if direction == "up":
             return (self.x, self.y-1)
@@ -198,6 +209,21 @@ class Guard(Character):
         
         draw_prison()
         GAME_BOARD.draw_msg("Oh no! There are only a few essential employees in the building, but one of them caught you! No more fancy art collecting for you.")
+
+class Water(GameElement):
+    IMAGE = "Water"
+    SOLID = True
+    COLLECTIBLE = False
+
+class Grass(GameElement):
+    IMAGE = "GrassBlock"
+    SOLID = True
+    COLLECTIBLE = False
+
+class OpenChest(GameElement):
+    IMAGE = "OpenChest"
+    SOLID = True
+    COLLECTIBLE = False
 
 def keyboard_handler():
     direction = None
@@ -259,6 +285,14 @@ def draw_museum():
 
     render_board(map_text_lines)
 
+
+    GAME_BOARD.register(PLAYER)
+    GAME_BOARD.set_el(0,3, PLAYER)
+
+    
+    GAME_BOARD.register(GUARD)
+    GAME_BOARD.set_el(5,2, GUARD)
+
 def draw_prison():
 
     prison_file = open("prison_cell.txt")
@@ -272,6 +306,19 @@ def draw_prison():
 
     GAME_BOARD.register(GUARD)
     GAME_BOARD.set_el(2,3, GUARD)
+
+    PLAYER.reset_inventory()
+
+def draw_winner_island():
+
+    island_file = open("win_map.txt")
+    island_text_lines = island_file.readlines()
+    GAME_BOARD.current_map = island_text_lines
+
+    render_board(island_text_lines)
+
+    GAME_BOARD.register(PLAYER)
+    GAME_BOARD.set_el(2,4, PLAYER)
 
 def draw_item(x, y,item):
 
@@ -334,20 +381,31 @@ def draw_item(x, y,item):
         GAME_BOARD.register(fake_wall)
         GAME_BOARD.set_el(x, y, fake_wall)
 
+    if item == "W":
+        water = Water()
+        GAME_BOARD.register(water)
+        GAME_BOARD.set_el(x, y, water)
+
+    if item == "$":
+        grass = Grass()
+        GAME_BOARD.register(grass)
+        GAME_BOARD.set_el(x, y, grass)
+
+    if item == "T":
+        open_chest = OpenChest()
+        GAME_BOARD.register(open_chest)
+        GAME_BOARD.set_el(x, y, open_chest)
+
 
 def initialize():
 
-    draw_museum()
-
     global PLAYER
     PLAYER = Character()
-    GAME_BOARD.register(PLAYER)
-    GAME_BOARD.set_el(0,3, PLAYER)
 
     global GUARD
     GUARD = Guard()
-    GAME_BOARD.register(GUARD)
-    GAME_BOARD.set_el(5,2, GUARD)
+
+    draw_museum()
 
     GAME_BOARD.draw_msg("Princess Game!!!")
 
