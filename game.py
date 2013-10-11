@@ -83,13 +83,18 @@ class Bug(GameElement):
         else:
             GAME_BOARD.draw_msg("You need a key to unlock the exhibit and collect the bug!")
 
+class WinStar(GameElement):
+    IMAGE = "Star"
+    SOLID = True
+    COLLECTIBLE = False
+
 class Star(GameElement):
     IMAGE = "Star"
     SOLID = True
     COLLECTIBLE = True
 
     def interact(self, player):
-        #use for loop to iterate through inventory.items()
+        #use for-loop to iterate through inventory.items()
             #sum items in inventory
         #divide float(sum) by total number of items to calculate chance of success
         #automatically proceed with heist, randomly generate win/lose scenario
@@ -99,8 +104,8 @@ class Star(GameElement):
         for loot_name, value_list in player.inventory.items():
             temp += len(value_list)
         success_likelihood = float(temp)/4
-
-        if success_likelihood >= random.randint(0, 1):
+         
+        if success_likelihood >= random.uniform(0.0, 1.0):
             self.SOLID = False
             GAME_BOARD.draw_msg("Bravo! You pulled off the heist! Enjoy your intergalactic treasure in the privacy of your enchanted garden.")
             draw_win_map()
@@ -191,11 +196,12 @@ class Guard(Character):
 
     def move_guard(self):
 
-        if DEBUG:
+        if DEBUG or GAME_BOARD.current_map_title == "WINNER":
             return 
 
         direction = random.choice(["up", "down", "left", "right"])
         next_x, next_y = self.next_pos(direction)
+
 
         if next_x in range(GAME_WIDTH) and next_y in range(GAME_HEIGHT):
 
@@ -282,6 +288,7 @@ def draw_museum():
     map_file = open("game_map.txt")
     map_text_lines = map_file.readlines()
     GAME_BOARD.current_map = map_text_lines
+    GAME_BOARD.current_map_title = "MUSEUM"
 
     render_board(map_text_lines)
 
@@ -298,6 +305,7 @@ def draw_prison():
     prison_file = open("prison_cell.txt")
     prison_text_lines = prison_file.readlines()
     GAME_BOARD.current_map = prison_text_lines
+    GAME_BOARD.current_map_title = "PRISON"
 
     render_board(prison_text_lines)
 
@@ -314,6 +322,7 @@ def draw_win_map():
     win_file = open("win_map.txt")
     win_text_lines = win_file.readlines()
     GAME_BOARD.current_map = win_text_lines
+    GAME_BOARD.current_map_title = "WINNER"
 
     render_board(win_text_lines)
 
@@ -395,6 +404,11 @@ def draw_item(x, y,item):
         open_chest = OpenChest()
         GAME_BOARD.register(open_chest)
         GAME_BOARD.set_el(x, y, open_chest)
+
+    if item == "S":
+        win_star = WinStar()
+        GAME_BOARD.register(win_star)
+        GAME_BOARD.set_el(x, y, win_star)
 
 
 def initialize():
